@@ -1,31 +1,47 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const mysql = require('mysql');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Create or connect to the SQLite database
-const dbPath = path.join(__dirname, 'tasks.db');
-const db = new sqlite3.Database(dbPath);
+// AWS RDS MySQL database configuration
+const dbConfig = {
+  host: 'database-1.cdf1dissbwe4.us-east-1.rds.amazonaws.com',
+  user: 'admin',
+  password: 'qwertyui',
+  database: 'data',
+};
 
-// Create a 'tasks' table if it doesn't exist
-db.run(
-  'CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, task TEXT)',
-  (err) => {
-    if (err) {
-      console.error('Error creating table:', err);
-    } else {
-      console.log('Table created or already exists.');
-    }
+// Create a MySQL database connection
+const db = mysql.createConnection(dbConfig);
+
+// Connect to the MySQL database
+db.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+  } else {
+    console.log('Connected to the database.');
+
+    // Create the 'tasks' table if it doesn't exist
+    db.query(
+      'CREATE TABLE IF NOT EXISTS tasks (id INT AUTO_INCREMENT PRIMARY KEY, task TEXT)',
+      (err) => {
+        if (err) {
+          console.error('Error creating table:', err);
+        } else {
+          console.log('Table created or already exists.');
+        }
+      }
+    );
   }
-);
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/tasks', (req, res) => {
   // Fetch tasks from the database
-  db.all('SELECT * FROM tasks', (err, rows) => {
+  db.query('SELECT * FROM tasks', (err, rows) => {
     if (err) {
       console.error('Error fetching tasks:', err);
       res.status(500).send('Internal Server Error');
@@ -43,7 +59,7 @@ app.post('/tasks', (req, res) => {
   }
 
   // Insert the new task into the database
-  db.run('INSERT INTO tasks (task) VALUES (?)', [task], (err) => {
+  db.query('INSERT INTO tasks (task) VALUES (?)', [task], (err) => {
     if (err) {
       console.error('Error inserting task:', err);
       res.status(500).send('Internal Server Error');
@@ -57,7 +73,7 @@ app.delete('/tasks/:id', (req, res) => {
   const taskId = req.params.id;
 
   // Delete the task from the database
-  db.run('DELETE FROM tasks WHERE id = ?', [taskId], (err) => {
+  db.query('DELETE FROM tasks WHERE id = ?', [taskId], (err) => {
     if (err) {
       console.error('Error deleting task:', err);
       res.status(500).send('Internal Server Error');
@@ -70,4 +86,4 @@ app.delete('/tasks/:id', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-module.exports = app;
+
