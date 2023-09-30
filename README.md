@@ -1,9 +1,3 @@
-Creating a fully automated ci/cd pipeline
-
-TOOLS USER
-- Jenkins
-- Docker
-- Sonarqube
-- Github
+Creating a highly available aws architecture
 
 
