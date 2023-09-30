@@ -5,4 +5,4 @@ services:
     ports:
       - "8085:3000"
     deploy:
-      replicas: 3
+      replicas: 3 # will work in case i deploy app wth docker swarm
