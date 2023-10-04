@@ -1,1 +1,6 @@
 node_modules/
+sautrn/.terraform/
+saturn/.terraform.lock.hcl
+saturn/terraform.tfstate
+saturn/terraform.tfstate.backup
+saturn/id_rsa

@@ -1,0 +1,11 @@
+terraform {
+
+  backend "s3" {
+    # access_key = "AKIA2MIL24FBNHKJVLPZ"
+    # secret_key = "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"
+    bucket         = "s3-tfstate-69693"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    # dynamodb_table = "dynamodb-tfstate-lock"
+  }
+}

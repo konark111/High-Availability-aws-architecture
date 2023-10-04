@@ -1,0 +1,43 @@
+resource "aws_instance" "server1" {
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.instance_keypair
+  subnet_id              = var.public_instance_subnet_id
+  vpc_security_group_ids = var.instance_sg_id
+  #user_data              = file("ins_script.sh")
+  #  count = 5
+  tags = {
+    Name = "first-with-terra-1"
+    #    Name = "Public-${format("%02d", count.index + 1)}"
+  }
+
+}
+
+resource "aws_instance" "server2" {
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.instance_keypair  #aws_key_pair.web.key_name
+  subnet_id              = var.private_appinstance_subnet_id  #aws_subnet.main2.id
+  vpc_security_group_ids = var.instance_sg_id #[aws_security_group.ssh-access.id]
+  #  user_data              = file("ins_script.sh")
+  #  count = 5
+  tags = {
+    Name = "first-with-terra-2"
+    #    Name = "private-${format("%02d", count.index + 1)}"
+  }
+
+}
+
+resource "aws_key_pair" "web" {
+  key_name   = var.key_path #"id_rsa"
+  public_key = var.key_path
+}
+
+
+output "public-ip" {
+  value = aws_instance.server1.*.public_ip
+}
+
+output "private-ip" {
+  value = aws_instance.server2.*.private_ip
+}
