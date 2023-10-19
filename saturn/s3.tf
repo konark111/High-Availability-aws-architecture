@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "tf-s3" {
-  bucket = "s3-tfstate-6969"
+  bucket = "s3-tfstate-111"
   acl    = "private"
 #  region = "us-east-1"
    force_destroy = true
