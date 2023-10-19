@@ -1,0 +1,30 @@
+---
+- name: Install Docker and Docker Compose on Ubuntu
+  hosts: servers
+  become: yes 
+
+  tasks:
+    - name: Update APT Repository
+      apt:
+        update_cache: yes
+      become: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+      become: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'a+x'
+      become: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
